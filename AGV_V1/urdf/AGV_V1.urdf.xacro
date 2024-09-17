@@ -168,5 +168,25 @@
     <parent link="upper_plate"/>
     <child link="camera"/>
   </joint>
-  
+
+  <xacro:macro name="camera_part" params="name reflect">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <cylinder length="0.005" radius="0.005"/> <!-- Camera part length and radius -->
+        </geometry>
+        <material name="base_material">
+          <color rgba="${base_color}"/>
+        </material>
+      </visual>
+    </link>
+    <joint name="${name}_joint" type="fixed">
+      <origin xyz="${0.00625} ${reflect*(0.04-0.005)/2} 0" rpy="0 ${pi/2} 0"/>
+      <parent link="camera"/>
+      <child link="${name}"/>
+    </joint>
+  </xacro:macro>
+  <xacro:camera_part name="camera_lens" reflect="1"/>
+  <xacro:camera_part name="camera_ir" reflect="-1"/>
+
 </robot>
