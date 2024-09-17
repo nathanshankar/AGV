@@ -11,6 +11,7 @@ A collection of Autonomous Guided Vehicle (AGV) simulations and projects focused
 - Design of a AGV for a factory environment.
 **Skills Highlighted**: URDF and Xacro
 
+https://github.com/user-attachments/assets/01faaef8-417e-49e5-8af9-9deb5dbe183d
 
 ---
 
@@ -21,9 +22,6 @@ A collection of Autonomous Guided Vehicle (AGV) simulations and projects focused
 - Real-time obstacle detection
 - Re-routing algorithms for dynamic environments  
 **Skills Highlighted**: Path planning algorithms, dynamic route adjustment, sensor fusion
-
-
-https://github.com/user-attachments/assets/01faaef8-417e-49e5-8af9-9deb5dbe183d
 
 ---
 
