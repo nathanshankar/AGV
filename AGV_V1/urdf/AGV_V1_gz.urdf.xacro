@@ -1,0 +1,182 @@
+<?xml version="1.0"?>
+<robot name="agv" xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:include filename="$(find AGV_V1)/urdf/AGV_V1.urdf.xacro"/>
+    <!--Gazebo Plugins-->
+    <gazebo>
+        <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
+            <updateRate>100.0</updateRate>
+            <robotNamespace>/</robotNamespace>
+            <leftFrontJoint>front_left</leftFrontJoint>
+            <rightFrontJoint>front_right</rightFrontJoint>
+            <leftRearJoint>back_left</leftRearJoint>
+            <rightRearJoint>back_right</rightRearJoint>
+            <wheelSeparation>0.275</wheelSeparation>
+            <wheelDiameter>0.1</wheelDiameter>
+            <robotBaseFrame>base_link</robotBaseFrame>
+            <torque>20</torque>
+            <topicName>cmd_vel</topicName>
+            <broadcastTF>false</broadcastTF>
+            <publish_odom>true</publish_odom>
+            <publish_odom_tf>true</publish_odom_tf>
+            <publish_wheel_tf>true</publish_wheel_tf>
+
+            <odometry_frame>/odom</odometry_frame>
+            <robot_base_frame>base_link</robot_base_frame>
+        </plugin>
+
+    </gazebo>
+
+    <gazebo>
+      <plugin filename="ignition-gazebo-joint-state-publisher-system" name="ignition::gazebo::systems::JointStatePublisher">
+        <update_rate>100</update_rate>
+        <joint_name>front_left</joint_name>
+        <joint_name>front_right</joint_name>
+        <joint_name>back_left</joint_name>
+        <joint_name>back_right</joint_name>
+      </plugin>
+  </gazebo> 
+
+  <gazebo reference="base_link">
+    <sensor name="imu_sensor" type="imu">
+      <topic>/AGV/imu</topic>
+      <frame_id>base_link</frame_id>
+      <ignition_frame_id>base_link</ignition_frame_id>
+      <plugin filename="libignition-gazebo-imu-system.so" name="ignition::gazebo::systems::Imu">
+        <initial_orientation_as_reference>false</initial_orientation_as_reference>
+      </plugin>
+      <always_on>true</always_on>
+      <update_rate>200</update_rate>
+      <visualize>true</visualize>
+     <imu>
+     	<angular_velocity>
+     	  <x>
+     	    <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>2e-4</stddev>
+              <bias_mean>0.0000075</bias_mean>
+              <bias_stddev>0.0000008</bias_stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>2e-4</stddev>
+              <bias_mean>0.0000075</bias_mean>
+              <bias_stddev>0.0000008</bias_stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>2e-4</stddev>
+              <bias_mean>0.0000075</bias_mean>
+              <bias_stddev>0.0000008</bias_stddev>
+            </noise>
+          </z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>1.7e-2</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>1.7e-2</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>1.7e-2</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </noise>
+          </z>
+        </linear_acceleration>
+      </imu>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="lidar">
+    <sensor type="gpu_lidar" name="generic_lidar_sensor">
+
+      <topic>/AGV/scan</topic>
+      <frame_id>lidar</frame_id>
+      <ignition_frame_id>lidar</ignition_frame_id>
+
+      <update_rate>20.0</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>512</samples>
+            <resolution>1</resolution>
+            <min_angle>-${pi*2}</min_angle>
+            <max_angle>${pi*2}</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.20</min>
+          <max>12.0</max>
+          <resolution>0.03</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.001</stddev>
+        </noise>
+      </ray>
+      <always_on>1</always_on>
+      <visualize>false</visualize>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="camera">
+  <sensor name="camera_lens" type="depth">
+    <update_rate>20</update_rate>
+    <camera>
+      <horizontal_fov>1.047198</horizontal_fov>
+      <image>
+        <width>640</width>
+        <height>480</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.05</near>
+        <far>3</far>
+      </clip>
+    </camera>
+    <plugin name="camera_ir" filename="libgazebo_ros_openni_kinect.so">
+      <baseline>0.2</baseline>
+      <alwaysOn>true</alwaysOn>
+      <updateRate>1.0</updateRate>
+      <cameraName>AGV_camera_ir</cameraName>
+      <imageTopicName>/AGV_camera/color/image_raw</imageTopicName>
+      <cameraInfoTopicName>/AGV_camera/color/camera_info</cameraInfoTopicName>
+      <depthImageTopicName>/AGV_camera/depth/image_raw</depthImageTopicName>
+      <depthImageInfoTopicName>/AGV_camera/depth/camera_info</depthImageInfoTopicName>
+      <pointCloudTopicName>/AGV_camera/depth/points</pointCloudTopicName>
+      <frameName>camera</frameName>
+      <pointCloudCutoff>0.5</pointCloudCutoff>
+      <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+      <distortionK1>0.00000001</distortionK1>
+      <distortionK2>0.00000001</distortionK2>
+      <distortionK3>0.00000001</distortionK3>
+      <distortionT1>0.00000001</distortionT1>
+      <distortionT2>0.00000001</distortionT2>
+      <CxPrime>0</CxPrime>
+      <Cx>0</Cx>
+      <Cy>0</Cy>
+      <focalLength>0</focalLength>
+      <hackBaseline>0</hackBaseline>
+    </plugin>
+  </sensor>
+  </gazebo>
+
+</robot>
