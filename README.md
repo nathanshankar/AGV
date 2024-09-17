@@ -5,7 +5,7 @@ A collection of Autonomous Guided Vehicle (AGV) simulations and projects focused
 
 ---
 
-## 1. Basic AGV Design[https://github.com/nathanshankar/AGV/tree/main/AGV_V1]
+## 1. [Basic AGV Design](https://github.com/nathanshankar/AGV/tree/main/AGV_V1)
 **Description**: This project simulates an AGV with a 5-DOF manipulator  
 **Features**:
 - Design of a AGV for a factory environment.
