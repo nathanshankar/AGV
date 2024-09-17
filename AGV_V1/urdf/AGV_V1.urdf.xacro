@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<robot name="agv_with_arm" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find robotic_manipulator)/urdf/arm.urdf.xacro"/>
+
+  <!-- Define colors as properties for easy modification -->
+  <xacro:property name="base_color" value="0.5 0.5 0.5 1.0"/> <!-- Default gray -->
+  <xacro:property name="wheel_color" value="0.0 0.0 0.0 1.0"/> <!-- Default black -->
+  <xacro:property name="lidar_color" value="1.0 0.0 0.0 1.0"/> <!-- Default red -->
+  <xacro:property name="arm_color" value="0.0 0.0 1.0 1.0"/> <!-- Default blue -->
+  <xacro:property name="gripper_color" value="0.0 0.0 0.0 1.0"/> <!-- Default black -->
+  <xacro:property name="camera_color" value="0.0 0.0 0.0 1.0"/> <!-- Default black -->
+
+  <xacro:property name="b_l" value="0.3"/> <!-- Base length -->
+  <xacro:property name="b_w" value="0.225"/> <!-- Base width -->
+  <xacro:property name="b_h" value="0.1"/> <!-- Base height -->
+  <xacro:property name="w_r" value="0.05"/> <!-- Wheel radius -->
+  <xacro:property name="w_l" value="0.025"/> <!-- Wheel length -->
+  <xacro:property name="lidar_r" value="0.025"/> <!-- Lidar radius -->
+  <xacro:property name="lidar_l" value="0.025"/> <!-- Lidar length -->
+  <xacro:property name="pillar_l" value="0.025"/> <!-- Pillar length -->
+  <xacro:property name="pillar_h" value="0.05"/> <!-- Pillar height -->
+  <xacro:property name="upper_plate_h" value="0.0125"/> <!-- Upper plate height -->
+
+  <!-- Base Link (Chassis) -->
+  <link name="base_footprint"/>
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="${b_l} ${b_w} ${b_h}"/> <!-- Base dimensions -->
+      </geometry>
+      <material name="base_material">
+        <color rgba="${base_color}"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.1"/> <!-- Base height -->
+  </joint>
+
+  <!-- Wheel -->
+  <xacro:macro name="wheel" params="name x_reflect y_reflect">
+    <link name="${name}_wheel">
+      <visual>
+        <geometry>
+          <cylinder length="${w_l}" radius="${w_r}"/> <!-- Wheel height and radius -->
+        </geometry>
+        <material name="wheel_material">
+          <color rgba="${wheel_color}"/>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="${name}_wheel_joint" type="continuous">
+      <origin xyz="${x_reflect*b_l/2} ${y_reflect*(b_w+w_l)/2} ${-b_h/2}" rpy="${-pi/2} 0 0"/>
+      <parent link="base_link"/>
+      <child link="${name}_wheel"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+  </xacro:macro>
+  <xacro:wheel name="front_left" x_reflect="1" y_reflect="1"/>
+  <xacro:wheel name="front_right" x_reflect="1" y_reflect="-1"/>
+  <xacro:wheel name="back_left" x_reflect="-1" y_reflect="1"/>
+  <xacro:wheel name="back_right" x_reflect="-1" y_reflect="-1"/>
+
+  <!-- Caster Wheel 
+  <xacro:macro name="caster_wheel" params="name reflect">
+    <link name="${name}_caster_wheel">
+      <visual>
+        <geometry>
+          <sphere radius="0.05"/> 
+        </geometry>
+        <material name="caster_material">
+          <color rgba="0.5 0.5 0.5 1.0"/> 
+        </material>
+      </visual>
+    </link>
+
+    <joint name="${name}_caster_wheel_joint" type="fixed">
+      <origin xyz="${reflect*0.25} 0 -0.1" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="${name}_caster_wheel"/>
+    </joint>
+  </xacro:macro>
+  <xacro:caster_wheel name="front" reflect="1"/>
+  <xacro:caster_wheel name="back" reflect="-1"/> -->
+
+  <!-- Pillar-->
+  <xacro:macro name="pillar" params="name x_reflect y_reflect">
+    <link name="${name}_pillar">
+      <visual>
+        <geometry>
+          <box size="${w_r/2} ${w_r/2} ${w_r}"/> <!-- Pillar height and radius -->
+        </geometry>
+        <material name="pillar_material">
+          <color rgba="0.5 0.5 0.5 1.0"/> <!-- Default gray -->
+        </material>
+      </visual>
+    </link>
+
+    <joint name="${name}_pillar_joint" type="fixed">
+      <origin xyz="${x_reflect*(b_l-pillar_l)/2} ${y_reflect*(b_w-pillar_l)/2} ${(b_h+pillar_h)/2}" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="${name}_pillar"/>
+    </joint>
+  </xacro:macro>
+  <xacro:pillar name="front_left" x_reflect="1" y_reflect="1"/>
+  <xacro:pillar name="front_right" x_reflect="1" y_reflect="-1"/>
+  <xacro:pillar name="back_left" x_reflect="-1" y_reflect="1"/>
+  <xacro:pillar name="back_right" x_reflect="-1" y_reflect="-1"/>
+
+  <!-- Lidar -->
+  <link name="lidar">
+    <visual>
+      <geometry>
+        <cylinder length="${lidar_l}" radius="${lidar_r}"/> <!-- Lidar length and radius -->
+      </geometry>
+      <material name="lidar_material">
+        <color rgba="${lidar_color}"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="lidar_joint" type="fixed">
+    <origin xyz="0 0 ${(b_h+lidar_l)/2}" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="lidar"/>
+  </joint>
+
+  <!--Upper Plate-->
+  <link name="upper_plate">
+    <visual>
+      <geometry>
+        <box size="${b_l} ${b_w} ${upper_plate_h}"/> <!-- Upper plate dimensions -->
+      </geometry>
+      <material name="upper_plate_material">
+        <color rgba="0.5 0.5 0.5 1.0"/> <!-- Default gray -->
+      </material>
+    </visual>
+  </link>
+  <joint name="upper_plate_joint" type="fixed">
+    <origin xyz="0 0 ${pillar_h+(b_h+upper_plate_h)/2}" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="upper_plate"/>
+  </joint>
+
+  <!-- Arm -->
+  <joint name="arm_base_joint" type="fixed">
+    <origin xyz="${(b_l/2)-cylinder_radius} 0 0" rpy="0 0 0"/>
+    <parent link="upper_plate"/>
+    <child link="arm_base_link"/>
+  </joint>
+  
+</robot>
