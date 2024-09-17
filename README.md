@@ -21,7 +21,9 @@ A collection of Autonomous Guided Vehicle (AGV) simulations and projects focused
 - Real-time obstacle detection
 - Re-routing algorithms for dynamic environments  
 **Skills Highlighted**: Path planning algorithms, dynamic route adjustment, sensor fusion
-[Screencast from 17-09-24 16:49:36.webm](https://github.com/user-attachments/assets/8c85b01f-b4ab-4a0f-9a9e-0724040760c9)
+
+
+https://github.com/user-attachments/assets/01faaef8-417e-49e5-8af9-9deb5dbe183d
 
 ---
 
