@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <robot name="agv_with_arm" xmlns:xacro="http://ros.org/wiki/xacro">
-
-  <xacro:include filename="$(find robotic_manipulator)/urdf/arm.urdf.xacro"/>
-
+<!--
+  <xacro:include filename="$(find robotic_manipulator)/urdf/arm.urdf.xacro"/> -->
+  <xacro:include filename="$(find AGV_V1)/urdf/inertial_macros.xacro"/>
   <!-- Define colors as properties for easy modification -->
   <xacro:property name="base_color" value="0.5 0.5 0.5 1.0"/> <!-- Default gray -->
   <xacro:property name="wheel_color" value="0.0 0.0 0.0 1.0"/> <!-- Default black -->
@@ -33,11 +33,17 @@
         <color rgba="${base_color}"/>
       </material>
     </visual>
+    <collision>
+      <geometry>
+        <box size="${b_l} ${b_w} ${b_h}"/> <!-- Base dimensions -->
+      </geometry>
+    </collision>
+    <xacro:inertial_solid_cuboid mass="1.0" w="${b_l}" d="${b_w}" h="${b_h}"/>
   </link>
   <joint name="base_footprint_joint" type="fixed">
     <parent link="base_footprint"/>
     <child link="base_link"/>
-    <origin xyz="0 0 0.1"/> <!-- Base height -->
+    <origin xyz="0 0 ${b_h}"/> <!-- Base height -->
   </joint>
 
   <!-- Wheel -->
@@ -51,6 +57,12 @@
           <color rgba="${wheel_color}"/>
         </material>
       </visual>
+      <collision>
+        <geometry>
+          <cylinder length="${w_l}" radius="${w_r}"/> <!-- Wheel height and radius -->
+        </geometry>
+      </collision>
+      <xacro:inertial_solid_cylinder mass="1.0" r="${w_r}" h="${w_l}"/>
     </link>
 
     <joint name="${name}_wheel_joint" type="continuous">
@@ -98,6 +110,12 @@
           <color rgba="0.5 0.5 0.5 1.0"/> <!-- Default gray -->
         </material>
       </visual>
+      <collision>
+        <geometry>
+          <box size="${w_r/2} ${w_r/2} ${w_r}"/> <!-- Pillar height and radius -->
+        </geometry>
+      </collision>
+      <xacro:inertial_solid_cuboid mass="1.0" w="${w_r/2}" d="${w_r/2}" h="${w_r}"/>
     </link>
 
     <joint name="${name}_pillar_joint" type="fixed">
@@ -121,6 +139,12 @@
         <color rgba="${lidar_color}"/>
       </material>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${lidar_l}" radius="${lidar_r}"/> <!-- Lidar length and radius -->
+      </geometry>
+    </collision>
+    <xacro:inertial_solid_cylinder mass="1.0" r="${lidar_r}" h="${lidar_l}"/>
   </link>
   <joint name="lidar_joint" type="fixed">
     <origin xyz="0 0 ${(b_h+lidar_l)/2}" rpy="0 0 0"/>
@@ -138,6 +162,12 @@
         <color rgba="0.5 0.5 0.5 1.0"/> <!-- Default gray -->
       </material>
     </visual>
+    <collision>
+      <geometry>
+        <box size="${b_l} ${b_w} ${upper_plate_h}"/> <!-- Upper plate dimensions -->
+      </geometry>
+    </collision>
+    <xacro:inertial_solid_cuboid mass="1.0" w="${b_l}" d="${b_w}" h="${upper_plate_h}"/>
   </link>
   <joint name="upper_plate_joint" type="fixed">
     <origin xyz="0 0 ${pillar_h+(b_h+upper_plate_h)/2}" rpy="0 0 0"/>
@@ -145,12 +175,12 @@
     <child link="upper_plate"/>
   </joint>
 
-  <!-- Arm -->
+  <!-- Arm
   <joint name="arm_base_joint" type="fixed">
     <origin xyz="${(b_l/2)-cylinder_radius} 0 0" rpy="0 0 0"/>
     <parent link="upper_plate"/>
     <child link="arm_base_link"/>
-  </joint>
+  </joint>-->
 
   <!-- Camera -->
   <link name="camera">
@@ -162,6 +192,12 @@
         <color rgba="${camera_color}"/>
       </material>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.0125 0.05 0.0125"/> <!-- Camera dimensions -->
+      </geometry>
+    </collision>
+    <xacro:inertial_solid_cuboid mass="1.0" w="0.0125" d="0.05" h="0.0125"/>
   </link>
   <joint name="camera_joint" type="fixed">
     <origin xyz="${(b_l+0.0125)/2} 0 0" rpy="0 0 0"/>
@@ -179,6 +215,12 @@
           <color rgba="${base_color}"/>
         </material>
       </visual>
+      <collision>
+        <geometry>
+          <cylinder length="0.005" radius="0.005"/> <!-- Camera part length and radius -->
+        </geometry>
+      </collision>
+      <xacro:inertial_solid_cylinder mass="1.0" r="0.005" h="0.005"/>
     </link>
     <joint name="${name}_joint" type="fixed">
       <origin xyz="${0.00625} ${reflect*(0.04-0.005)/2} 0" rpy="0 ${pi/2} 0"/>

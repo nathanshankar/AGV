@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="five_dof_manipulator_with_gripper">
+  <xacro:include filename="$(find AGV_V1)/urdf/inertial_macros.xacro"/>
 
   <!-- Define properties -->
   <xacro:property name="cylinder_radius" value="0.05"/>
@@ -20,6 +21,13 @@
           <color rgba="${color} 1"/>
         </material>
       </visual>
+      <collision>
+        <origin xyz="0 0 ${length/2}" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="${radius}" length="${length}"/>
+        </geometry>
+      </collision>
+      <xacro:inertial_solid_cylinder mass="0.01" r="${radius}" h="${length}"/>
     </link>
   </xacro:macro>
 
@@ -53,6 +61,13 @@
           <color rgba="0.5 0.5 0.5 1"/>
         </material>
       </visual>
+      <collision>
+        <origin xyz="0 0.015 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.01 0.01 0.05"/>
+        </geometry>
+      </collision>
+      <xacro:inertial_solid_cuboid mass="0.005" w="0.01" d="0.01" h="0.05"/>
     </link>
   </xacro:macro>
 
@@ -87,6 +102,13 @@
         <color rgba="0 0 0 1"/>
       </material>
     </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.05 0.025 0.05"/>
+      </geometry>
+    </collision>
+    <xacro:inertial_solid_cuboid mass="0.01" w="0.05" d="0.025" h="0.05"/>
   </link>
 
   <!-- Gripper Fingers -->

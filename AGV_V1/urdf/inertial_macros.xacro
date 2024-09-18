@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- 
+    Inertial Macros for Various Geometric Shapes 
+    This file defines Xacro macros to calculate the inertia tensors for different 
+    standard geometric shapes based on their dimensions and mass.
+
+    author: Nathan Shankar
+  -->
+
+  <!-- 
+    Macro: inertial_solid_sphere
+    Description: Calculates inertia tensor for a solid sphere.
+    Parameters:
+      - mass (m): Mass of the sphere.
+      - radius (r): Radius of the sphere.
+  -->
+  <xacro:macro name="inertial_solid_sphere" params="mass r">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${(2.0/5.0)*mass*r*r}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${(2.0/5.0)*mass*r*r}"
+        iyz="0.0"
+        izz="${(2.0/5.0)*mass*r*r}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- 
+    Macro: inertial_hollow_sphere
+    Description: Calculates inertia tensor for a hollow (thin-walled) sphere.
+    Parameters:
+      - mass (m): Mass of the hollow sphere.
+      - radius (r): Radius of the hollow sphere.
+  -->
+  <xacro:macro name="inertial_hollow_sphere" params="mass r">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${(2.0/3.0)*mass*r*r}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${(2.0/3.0)*mass*r*r}"
+        iyz="0.0"
+        izz="${(2.0/3.0)*mass*r*r}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- 
+    Macro: inertial_solid_ellipsoid
+    Description: Calculates inertia tensor for a solid ellipsoid.
+    Parameters:
+      - mass (m): Mass of the ellipsoid.
+      - a: Semi-axis along X-axis.
+      - b: Semi-axis along Y-axis.
+      - c: Semi-axis along Z-axis.
+  -->
+  <xacro:macro name="inertial_solid_ellipsoid" params="mass a b c">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${(1.0/5.0)*mass*(b*b + c*c)}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${(1.0/5.0)*mass*(a*a + c*c)}"
+        iyz="0.0"
+        izz="${(1.0/5.0)*mass*(a*a + b*b)}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- 
+    Macro: inertial_right_circular_cone_apex
+    Description: Calculates inertia tensor for a right circular cone about its apex.
+    Parameters:
+      - mass (m): Mass of the cone.
+      - radius (r): Base radius of the cone.
+      - height (h): Height of the cone.
+  -->
+  <xacro:macro name="inertial_right_circular_cone_apex" params="mass r h">
+    <inertial>
+      <!-- Assuming the apex is at the origin and the cone extends along the positive Z-axis -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${(3.0/20.0)*mass*r*r + (3.0/5.0)*mass*h*h}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${(3.0/20.0)*mass*r*r + (3.0/5.0)*mass*h*h}"
+        iyz="0.0"
+        izz="${(3.0/10.0)*mass*r*r}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- 
+    Macro: inertial_solid_cuboid
+    Description: Calculates inertia tensor for a solid cuboid (rectangular prism).
+    Parameters:
+      - mass (m): Mass of the cuboid.
+      - width (w): Width along the X-axis.
+      - height (d): Depth along the Y-axis.
+      - depth (h): Height along the Z-axis.
+  -->
+  <xacro:macro name="inertial_solid_cuboid" params="mass w d h">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${(1.0/12.0)*mass*(h*h + d*d)}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${(1.0/12.0)*mass*(w*w + h*h)}"
+        iyz="0.0"
+        izz="${(1.0/12.0)*mass*(w*w + d*d)}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- 
+    Macro: inertial_slender_rod_end
+    Description: Calculates inertia tensor for a slender rod aligned along the Y-axis about one end.
+    Parameters:
+      - mass (m): Mass of the rod.
+      - length (l): Length of the rod.
+  -->
+  <xacro:macro name="inertial_slender_rod_end" params="mass l">
+    <inertial>
+      <!-- Origin is at one end of the rod -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${(1.0/3.0)*mass*l*l}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="0.0"
+        iyz="0.0"
+        izz="${(1.0/3.0)*mass*l*l}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- 
+    Macro: inertial_slender_rod_center
+    Description: Calculates inertia tensor for a slender rod aligned along the Y-axis about its center.
+    Parameters:
+      - mass (m): Mass of the rod.
+      - length (l): Length of the rod.
+  -->
+  <xacro:macro name="inertial_slender_rod_center" params="mass l">
+    <inertial>
+      <!-- Origin is at the center of the rod -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${(1.0/12.0)*mass*l*l}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="0.0"
+        iyz="0.0"
+        izz="${(1.0/12.0)*mass*l*l}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- 
+    Macro: inertial_solid_cylinder
+    Description: Calculates inertia tensor for a solid cylinder.
+    Parameters:
+      - mass (m): Mass of the cylinder.
+      - radius (r): Radius of the cylinder.
+      - height (h): Height (length) of the cylinder.
+  -->
+  <xacro:macro name="inertial_solid_cylinder" params="mass r h">
+    <inertial>
+      <!-- Assuming the cylinder's axis is aligned with the Z-axis -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${(3.0/12.0)*mass*(r*r) + (mass*h*h)/12.0}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${(3.0/12.0)*mass*(r*r) + (mass*h*h)/12.0}"
+        iyz="0.0"
+        izz="${(1.0/2.0)*mass*r*r}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- 
+    Macro: inertial_thick_walled_cylindrical_tube
+    Description: Calculates inertia tensor for a thick-walled cylindrical tube with open ends.
+    Parameters:
+      - mass (m): Mass of the tube.
+      - inner_radius (r1): Inner radius of the tube.
+      - outer_radius (r2): Outer radius of the tube.
+      - height (h): Height (length) of the tube.
+  -->
+  <xacro:macro name="inertial_thick_walled_cylindrical_tube" params="mass r1 r2 h">
+    <inertial>
+      <!-- Assuming the tube's axis is aligned with the Z-axis -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${(3.0/12.0)*mass*(r1*r1 + r2*r2) + (mass*h*h)/12.0}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${(3.0/12.0)*mass*(r1*r1 + r2*r2) + (mass*h*h)/12.0}"
+        iyz="0.0"
+        izz="${(1.0/2.0)*mass*(r1*r1 + r2*r2)}"/>
+    </inertial>
+  </xacro:macro>
+
+</robot>
