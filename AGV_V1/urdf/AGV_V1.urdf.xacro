@@ -3,6 +3,7 @@
 <!--
   <xacro:include filename="$(find robotic_manipulator)/urdf/arm.urdf.xacro"/> -->
   <xacro:include filename="$(find AGV_V1)/urdf/inertial_macros.xacro"/>
+  <xacro:include filename="$(find d435i_depth)/urdf/d435i_gz.urdf.xacro"/>
   <!-- Define colors as properties for easy modification -->
   <xacro:property name="base_color" value="0.5 0.5 0.5 1.0"/> <!-- Default gray -->
   <xacro:property name="wheel_color" value="0.0 0.0 0.0 1.0"/> <!-- Default black -->
@@ -182,11 +183,11 @@
     <child link="arm_base_link"/>
   </joint>-->
 
-  <!-- Camera -->
+  <!-- Camera 
   <link name="camera">
     <visual>
       <geometry>
-        <box size="0.0125 0.05 0.0125"/> <!-- Camera dimensions -->
+        <box size="0.0125 0.05 0.0125"/> Camera dimensions
       </geometry>
       <material name="camera_material">
         <color rgba="${camera_color}"/>
@@ -194,7 +195,7 @@
     </visual>
     <collision>
       <geometry>
-        <box size="0.0125 0.05 0.0125"/> <!-- Camera dimensions -->
+        <box size="0.0125 0.05 0.0125"/> amera dimensions
       </geometry>
     </collision>
     <xacro:inertial_solid_cuboid mass="1.0" w="0.0125" d="0.05" h="0.0125"/>
@@ -209,7 +210,7 @@
     <link name="${name}">
       <visual>
         <geometry>
-          <cylinder length="0.005" radius="0.005"/> <!-- Camera part length and radius -->
+          <cylinder length="0.005" radius="0.005"/> Camera part length and radius
         </geometry>
         <material name="base_material">
           <color rgba="${base_color}"/>
@@ -217,7 +218,7 @@
       </visual>
       <collision>
         <geometry>
-          <cylinder length="0.005" radius="0.005"/> <!-- Camera part length and radius -->
+          <cylinder length="0.005" radius="0.005"/> Camera part length and radius
         </geometry>
       </collision>
       <xacro:inertial_solid_cylinder mass="1.0" r="0.005" h="0.005"/>
@@ -227,8 +228,14 @@
       <parent link="camera"/>
       <child link="${name}"/>
     </joint>
-  </xacro:macro>
+  </xacro:macro>  
   <xacro:camera_part name="camera_lens" reflect="1"/>
-  <xacro:camera_part name="camera_ir" reflect="-1"/>
+  <xacro:camera_part name="camera_ir" reflect="-1"/> -->
+
+  <joint name="d_cam_joint" type="fixed">
+    <origin xyz="${(b_l+0.0125)/2-0.01} 0 0.0055" rpy="0 0 0"/>
+    <parent link="upper_plate"/>
+    <child link="base_screw"/>
+  </joint>
 
 </robot>
