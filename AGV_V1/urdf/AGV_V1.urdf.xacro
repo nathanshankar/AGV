@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
-<robot name="agv_with_arm" xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name="agv" xmlns:xacro="http://ros.org/wiki/xacro">
 <!--
   <xacro:include filename="$(find robotic_manipulator)/urdf/arm.urdf.xacro"/> -->
+  <xacro:arg name="robot_ns" default="agv"/>
   <xacro:include filename="$(find AGV_V1)/urdf/inertial_macros.xacro"/>
-  <xacro:include filename="$(find d435i_depth)/urdf/d435i_gz.urdf.xacro"/>
+  <xacro:include filename="$(find d435i_depth)/urdf/test_d435i.urdf.xacro"/>
   <!-- Define colors as properties for easy modification -->
   <xacro:property name="base_color" value="0.5 0.5 0.5 1.0"/> <!-- Default gray -->
   <xacro:property name="wheel_color" value="0.0 0.0 0.0 1.0"/> <!-- Default black -->
@@ -24,7 +25,7 @@
   <xacro:property name="upper_plate_h" value="0.0125"/> <!-- Upper plate height -->
 
   <!-- Base Link (Chassis) -->
-  <link name="base_footprint"/>
+
   <link name="base_link">
     <visual>
       <geometry>
@@ -41,11 +42,6 @@
     </collision>
     <xacro:inertial_solid_cuboid mass="1.0" w="${b_l}" d="${b_w}" h="${b_h}"/>
   </link>
-  <joint name="base_footprint_joint" type="fixed">
-    <parent link="base_footprint"/>
-    <child link="base_link"/>
-    <origin xyz="0 0 ${b_h}"/> <!-- Base height -->
-  </joint>
 
   <!-- Wheel -->
   <xacro:macro name="wheel" params="name x_reflect y_reflect">
@@ -67,18 +63,16 @@
     </link>
 
     <joint name="${name}_wheel_joint" type="continuous">
-      <origin xyz="${x_reflect*b_l/2} ${y_reflect*(b_w+w_l)/2} ${-b_h/2}" rpy="${-pi/2} 0 0"/>
+      <origin xyz="${0*x_reflect*b_l/2} ${y_reflect*(b_w+w_l)/2} ${-b_h/2}" rpy="${-pi/2} 0 0"/>
       <parent link="base_link"/>
       <child link="${name}_wheel"/>
       <axis xyz="0 0 1"/>
     </joint>
   </xacro:macro>
-  <xacro:wheel name="front_left" x_reflect="1" y_reflect="1"/>
-  <xacro:wheel name="front_right" x_reflect="1" y_reflect="-1"/>
-  <xacro:wheel name="back_left" x_reflect="-1" y_reflect="1"/>
-  <xacro:wheel name="back_right" x_reflect="-1" y_reflect="-1"/>
+  <xacro:wheel name="left" x_reflect="1" y_reflect="1"/>
+  <xacro:wheel name="right" x_reflect="1" y_reflect="-1"/>
 
-  <!-- Caster Wheel 
+  <!-- Caster Wheel -->
   <xacro:macro name="caster_wheel" params="name reflect">
     <link name="${name}_caster_wheel">
       <visual>
@@ -89,16 +83,22 @@
           <color rgba="0.5 0.5 0.5 1.0"/> 
         </material>
       </visual>
+      <collision>
+        <geometry>
+          <sphere radius="0.05"/> 
+        </geometry>
+      </collision>
+      <xacro:inertial_solid_sphere mass="1.0" r="0.05"/>
     </link>
 
     <joint name="${name}_caster_wheel_joint" type="fixed">
-      <origin xyz="${reflect*0.25} 0 -0.1" rpy="0 0 0"/>
+      <origin xyz="${reflect*(b_l/2-w_r)} 0 ${-b_h/2}" rpy="0 0 0"/>
       <parent link="base_link"/>
       <child link="${name}_caster_wheel"/>
     </joint>
   </xacro:macro>
   <xacro:caster_wheel name="front" reflect="1"/>
-  <xacro:caster_wheel name="back" reflect="-1"/> -->
+  <xacro:caster_wheel name="back" reflect="-1"/>
 
   <!-- Pillar-->
   <xacro:macro name="pillar" params="name x_reflect y_reflect">
@@ -131,7 +131,7 @@
   <xacro:pillar name="back_right" x_reflect="-1" y_reflect="-1"/>
 
   <!-- Lidar -->
-  <link name="lidar">
+  <link name="lidar_link">
     <visual>
       <geometry>
         <cylinder length="${lidar_l}" radius="${lidar_r}"/> <!-- Lidar length and radius -->
@@ -150,7 +150,7 @@
   <joint name="lidar_joint" type="fixed">
     <origin xyz="0 0 ${(b_h+lidar_l)/2}" rpy="0 0 0"/>
     <parent link="base_link"/>
-    <child link="lidar"/>
+    <child link="lidar_link"/>
   </joint>
 
   <!--Upper Plate-->
@@ -237,5 +237,15 @@
     <parent link="upper_plate"/>
     <child link="base_screw"/>
   </joint>
+
+  <link name="base_footprint"/>
+  <joint name="base_footprint_joint" type="fixed">
+    <origin xyz="0 0 ${b_h}"/> <!-- Base height -->
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+  </joint>
+
+
+  <xacro:include filename="$(find AGV_V1)/urdf/AGV_V1.gazebo.xacro"/>
 
 </robot>

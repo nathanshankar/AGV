@@ -1,52 +1,47 @@
 <?xml version="1.0"?>
-<robot name="agv" xmlns:xacro="http://ros.org/wiki/xacro">
-    <xacro:include filename="$(find AGV_V1)/urdf/AGV_V1.urdf.xacro"/>
-    <!--Gazebo Plugins-->
-
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- ros_control plugin -->
   <gazebo>
     <plugin name="ros2_control" filename="libros2_control_gazebo.so">
-      <robotNamespace>AGV</robotNamespace>
+      <robotNamespace>$(arg robot_ns)</robotNamespace>
     </plugin>
   </gazebo>
 
+  <!-- Differential Drive - https://gazebosim.org/api/gazebo/4.5/classignition_1_1gazebo_1_1systems_1_1DiffDrive.html -->
   <gazebo>
-      <plugin filename="ignition-gazebo-diff-drive-system" name="ignition::gazebo::systems::DiffDrive">
-        <!-- Wheel Joints -->
-        <left_joint>front_left</left_joint>
-        <right_joint>front_right</right_joint>
-        <left_joint>back_left</left_joint>
-        <right_joint>back_right</right_joint>
+    <plugin filename="ignition-gazebo-diff-drive-system" name="ignition::gazebo::systems::DiffDrive">
+      <!-- Wheel Joints -->
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
 
-        <!-- Kinematics -->
-        <wheel_separation>0.275</wheel_separation>
-        <wheel_radius>0.05</wheel_radius>
-        <odom_publish_frequency>200</odom_publish_frequency>
-        
-        <!-- TF Frames -->
-        <frame_id>/odom</frame_id>
-        <child_frame_id>/base_link</child_frame_id>
+      <!-- Kinematics -->
+      <wheel_separation>0.275</wheel_separation>
+      <wheel_radius>0.05</wheel_radius>
+      <odom_publish_frequency>200</odom_publish_frequency>
+      
+      <!-- TF Frames -->
+      <frame_id>/odom</frame_id>
+      <child_frame_id>/base_link</child_frame_id>
 
-        <!-- topics -->
-        <topic>/AGV/cmd_vel</topic>
-        <odom_topic>/AGV/odometry</odom_topic>
-        <tf_topic>/AGV/tf</tf_topic>
-        <tf_topic></tf_topic>
-      </plugin>
+      <!-- topics -->
+      <topic>/model/leo/cmd_vel</topic>
+      <odom_topic>/model/leo/odometry</odom_topic>
+      <tf_topic>/model/leo/tf</tf_topic>
+      <tf_topic></tf_topic>
+    </plugin>
   </gazebo>
 
   <gazebo>
       <plugin filename="ignition-gazebo-joint-state-publisher-system" name="ignition::gazebo::systems::JointStatePublisher">
         <update_rate>100</update_rate>
-        <joint_name>front_left</joint_name>
-        <joint_name>front_right</joint_name>
-        <joint_name>back_left</joint_name>
-        <joint_name>back_right</joint_name>
+        <joint_name>left_wheel_joint</joint_name>
+        <joint_name>right_wheel_joint</joint_name>
       </plugin>
   </gazebo> 
 
   <gazebo reference="base_link">
     <sensor name="imu_sensor" type="imu">
-      <topic>/AGV/imu</topic>
+      <topic>/model/leo/imu</topic>
       <frame_id>base_link</frame_id>
       <ignition_frame_id>base_link</ignition_frame_id>
       <plugin filename="libignition-gazebo-imu-system.so" name="ignition::gazebo::systems::Imu">
@@ -112,12 +107,13 @@
     </sensor>
   </gazebo>
 
-  <gazebo reference="lidar">
+  <!--lidar-->
+  <gazebo reference="lidar_link">
     <sensor type="gpu_lidar" name="generic_lidar_sensor">
 
-      <topic>/AGV/scan</topic>
-      <frame_id>lidar</frame_id>
-      <ignition_frame_id>lidar</ignition_frame_id>
+      <topic>/model/leo/scan</topic>
+      <frame_id>lidar_link</frame_id>
+      <ignition_frame_id>lidar_link</ignition_frame_id>
 
       <update_rate>20.0</update_rate>
       <ray>
