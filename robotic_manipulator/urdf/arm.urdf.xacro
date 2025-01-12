@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="five_dof_manipulator_with_gripper">
-  <xacro:include filename="$(find AGV_V1)/urdf/inertial_macros.xacro"/>
+  <xacro:include filename="$(find agv_v1)/urdf/inertial_macros.xacro"/>
+  <xacro:include filename="$(find realsense_cam)/urdf/test_d435i.urdf.xacro"/>
 
   <!-- Define properties -->
   <xacro:property name="cylinder_radius" value="0.05"/>
@@ -114,5 +115,11 @@
   <!-- Gripper Fingers -->
   <xacro:gripper_finger finger_name="finger_1" offset="0.02 0 0" direction="0.05"/>
   <xacro:gripper_finger finger_name="finger_2" offset="-0.02 0 0" direction="-0.05"/>
+
+  <joint name="d_cam_joint" type="fixed">
+    <origin xyz="0 0 -0.025" rpy="${pi} 0 ${pi/2}"/>
+    <parent link="gripper_base"/>
+    <child link="base_screw"/>
+  </joint>
 
 </robot>

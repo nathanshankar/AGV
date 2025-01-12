@@ -34,6 +34,7 @@ def generate_launch_description():
         name='joint_state_publisher_gui',
     )
 
+
     # Rviz node
     node_rviz = Node(
         package='rviz2',
@@ -42,6 +43,7 @@ def generate_launch_description():
         name='rviz2',
         arguments=['-d' + os.path.join(get_package_share_directory(pkg_name), 'rviz', 'arm_view.rviz')]
     )
+
 
     # Add actions to LaunchDescription
     ld.add_action(SetParameter(name='use_sim_time', value=False))

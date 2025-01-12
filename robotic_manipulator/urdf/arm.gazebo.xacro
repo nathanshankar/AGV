@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+<!--
+<gazebo>
+    <plugin filename="libgz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(find robotic_manipulator)/config/arm_controllers.yaml</parameters>
+            <ros>
+                <remapping>/controller_manager/robot_description:=/robot_description</remapping>
+            </ros>
+    </plugin>
+</gazebo>
+-->
+<ros2_control name="arm" type="system">
+    <hardware>
+        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="joint_1">
+        <command_interface name="position">
+            <param name="min">-2.642</param>
+            <param name="max">2.462</param>
+        </command_interface>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="joint_2">
+        <command_interface name="position">
+            <param name="min">-2.642</param>
+            <param name="max">2.462</param>
+        </command_interface>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="joint_3">
+        <command_interface name="position">
+            <param name="min">-2.642</param>
+            <param name="max">2.462</param>
+        </command_interface>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="joint_4">
+        <command_interface name="position">
+            <param name="min">-2.642</param>
+            <param name="max">2.462</param>
+        </command_interface>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="joint_5">
+        <command_interface name="position">
+            <param name="min">-2.642</param>
+            <param name="max">2.462</param>
+        </command_interface>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="finger_1_joint">
+        <command_interface name="position">
+            <param name="min">0</param>
+            <param name="max">0.02</param>
+        </command_interface>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="finger_2_joint">
+        <command_interface name="position">
+            <param name="min">0</param>
+            <param name="max">0.02</param>
+        </command_interface>
+        <state_interface name="position"/>
+    </joint>
+</ros2_control>
+
+</robot>

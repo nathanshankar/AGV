@@ -3,8 +3,9 @@
 <!--
   <xacro:include filename="$(find robotic_manipulator)/urdf/arm.urdf.xacro"/> -->
   <xacro:arg name="robot_ns" default="agv"/>
-  <xacro:include filename="$(find AGV_V1)/urdf/inertial_macros.xacro"/>
-  <xacro:include filename="$(find d435i_depth)/urdf/test_d435i.urdf.xacro"/>
+  <xacro:include filename="$(find agv_v1)/urdf/inertial_macros.xacro"/>
+  <!-- <xacro:include filename="$(find realsense_cam)/urdf/test_d435i.urdf.xacro"/> -->
+  <xacro:include filename="$(find robotic_manipulator)/urdf/arm.urdf.xacro"/>
   <!-- Define colors as properties for easy modification -->
   <xacro:property name="base_color" value="0.5 0.5 0.5 1.0"/> <!-- Default gray -->
   <xacro:property name="wheel_color" value="0.0 0.0 0.0 1.0"/> <!-- Default black -->
@@ -18,11 +19,14 @@
   <xacro:property name="b_h" value="0.1"/> <!-- Base height -->
   <xacro:property name="w_r" value="0.05"/> <!-- Wheel radius -->
   <xacro:property name="w_l" value="0.025"/> <!-- Wheel length -->
+  <xacro:property name="s_r" value="0.01"/> 
+  <xacro:property name="s_l" value="0.075"/>
   <xacro:property name="lidar_r" value="0.025"/> <!-- Lidar radius -->
   <xacro:property name="lidar_l" value="0.025"/> <!-- Lidar length -->
   <xacro:property name="pillar_l" value="0.025"/> <!-- Pillar length -->
   <xacro:property name="pillar_h" value="0.05"/> <!-- Pillar height -->
   <xacro:property name="upper_plate_h" value="0.0125"/> <!-- Upper plate height -->
+  
 
   <!-- Base Link (Chassis) -->
 
@@ -42,6 +46,62 @@
     </collision>
     <xacro:inertial_solid_cuboid mass="1.0" w="${b_l}" d="${b_w}" h="${b_h}"/>
   </link>
+
+  <!--Steering link-->
+  <xacro:macro name="steering_link1" params="name x_reflect y_reflect">
+    <link name="${name}_steering_link">
+      <visual>
+        <geometry>
+          <cylinder length="${s_l}" radius="${s_r}"/> 
+        </geometry>
+        <material name="base_material">
+          <color rgba="${base_color}"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="${s_l}" radius="${s_r}"/> 
+        </geometry>
+      </collision>
+      <xacro:inertial_solid_cylinder mass="1.0" r="${s_r}" h="${s_l}"/>
+    </link>
+
+    <joint name="${name}_steering_joint" type="continuous">
+      <origin xyz="${x_reflect*(b_l-(2*s_r))/2} ${y_reflect*(b_w)/2} ${(-b_h/2) + s_r}" rpy="${-pi/2} 0 0"/>
+      <parent link="base_link"/>
+      <child link="${name}_steering_link"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+  </xacro:macro>
+  <xacro:steering_link1 name="front_left" x_reflect="1" y_reflect="1"/>
+  <xacro:steering_link1 name="front_right" x_reflect="1" y_reflect="-1"/>
+
+  <xacro:macro name="steering_link2" params="name x_reflect y_reflect">
+    <link name="${name}_steering_link">
+      <visual>
+        <geometry>
+          <cylinder length="${s_l}" radius="${s_r}"/> 
+        </geometry>
+        <material name="base_material">
+          <color rgba="${base_color}"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="${s_l}" radius="${s_r}"/> 
+        </geometry>
+      </collision>
+      <xacro:inertial_solid_cylinder mass="1.0" r="${s_r}" h="${s_l}"/>
+    </link>
+
+    <joint name="${name}_steering_joint" type="fixed">
+      <origin xyz="${x_reflect*(b_l-(2*s_r))/2} ${y_reflect*(b_w)/2} ${(-b_h/2) + s_r}" rpy="${-pi/2} 0 0"/>
+      <parent link="base_link"/>
+      <child link="${name}_steering_link"/>
+    </joint>
+  </xacro:macro>
+  <xacro:steering_link2 name="back_left" x_reflect="-1" y_reflect="1"/>
+  <xacro:steering_link2 name="back_right" x_reflect="-1" y_reflect="-1"/>
 
   <!-- Wheel -->
   <xacro:macro name="wheel" params="name x_reflect y_reflect">
@@ -63,16 +123,18 @@
     </link>
 
     <joint name="${name}_wheel_joint" type="continuous">
-      <origin xyz="${0*x_reflect*b_l/2} ${y_reflect*(b_w+w_l)/2} ${-b_h/2}" rpy="${-pi/2} 0 0"/>
-      <parent link="base_link"/>
+      <origin xyz="0 0 ${y_reflect*(s_l/2)}" rpy="0 0 0"/>
+      <parent link="${name}_steering_link"/>
       <child link="${name}_wheel"/>
       <axis xyz="0 0 1"/>
     </joint>
   </xacro:macro>
-  <xacro:wheel name="left" x_reflect="1" y_reflect="1"/>
-  <xacro:wheel name="right" x_reflect="1" y_reflect="-1"/>
+  <xacro:wheel name="front_left" x_reflect="1" y_reflect="1"/>
+  <xacro:wheel name="front_right" x_reflect="1" y_reflect="-1"/>
+  <xacro:wheel name="back_left" x_reflect="-1" y_reflect="1"/>
+  <xacro:wheel name="back_right" x_reflect="-1" y_reflect="-1"/>
 
-  <!-- Caster Wheel -->
+  <!-- Caster Wheel 
   <xacro:macro name="caster_wheel" params="name reflect">
     <link name="${name}_caster_wheel">
       <visual>
@@ -99,7 +161,8 @@
   </xacro:macro>
   <xacro:caster_wheel name="front" reflect="1"/>
   <xacro:caster_wheel name="back" reflect="-1"/>
-
+  -->
+  
   <!-- Pillar-->
   <xacro:macro name="pillar" params="name x_reflect y_reflect">
     <link name="${name}_pillar">
@@ -231,21 +294,20 @@
   </xacro:macro>  
   <xacro:camera_part name="camera_lens" reflect="1"/>
   <xacro:camera_part name="camera_ir" reflect="-1"/> -->
-
+  <!--
   <joint name="d_cam_joint" type="fixed">
     <origin xyz="${(b_l+0.0125)/2-0.01} 0 0.0055" rpy="0 0 0"/>
     <parent link="upper_plate"/>
     <child link="base_screw"/>
   </joint>
+  -->
 
-  <link name="base_footprint"/>
-  <joint name="base_footprint_joint" type="fixed">
-    <origin xyz="0 0 ${b_h}"/> <!-- Base height -->
-    <parent link="base_footprint"/>
-    <child link="base_link"/>
+  <joint name="arm_joint" type="fixed">
+    <origin xyz="${(b_l)/2-0.05} 0 0.0055" rpy="0 0 0"/>
+    <parent link="upper_plate"/>
+    <child link="arm_base_link"/>
   </joint>
 
-
-  <xacro:include filename="$(find AGV_V1)/urdf/AGV_V1.gazebo.xacro"/>
+  <xacro:include filename="$(find agv_v1)/urdf/agv_v1.gazebo.xacro"/>
 
 </robot>

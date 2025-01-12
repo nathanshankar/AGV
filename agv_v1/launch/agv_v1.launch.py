@@ -10,8 +10,8 @@ def generate_launch_description():
     
 
     # Specify the name of the package and path to xacro file within the package
-    pkg_name = 'AGV_V1'
-    file_subpath = 'urdf/AGV_V1.urdf.xacro'
+    pkg_name = 'agv_v1'
+    file_subpath = 'urdf/agv_v1.urdf.xacro'
 
 
     # Use xacro to process the file
@@ -40,7 +40,7 @@ def generate_launch_description():
         namespace='',
         executable='rviz2',
         name='rviz2',
-        arguments=['-d' + os.path.join(get_package_share_directory(pkg_name), 'rviz', 'AGV_V1_view.rviz')]
+        arguments=['-d' + os.path.join(get_package_share_directory(pkg_name), 'rviz', 'agv_v1_view.rviz')]
     )
 
     # Add actions to LaunchDescription
