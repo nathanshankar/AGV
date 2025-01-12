@@ -9,12 +9,9 @@ class ArmTrajectoryPublisher(Node):
         super().__init__('arm_trajectory_publisher')
 
         # Create a publisher for the joint trajectory
-        self.publisher_ = self.create_publisher(JointTrajectory, '/arm_controller/joint_trajectory', 10)
+        publisher = self.create_publisher(JointTrajectory, '/arm_controller/joint_trajectory', 10)
 
-        # Create and publish the JointTrajectory message
-        self.publish_trajectory()
-
-    def publish_trajectory(self):
+        # Create the JointTrajectory message
         trajectory_msg = JointTrajectory()
         trajectory_msg.joint_names = [
             'joint_1', 'joint_2', 'joint_3', 'joint_4', 'joint_5', 'finger_1_joint', 'finger_2_joint'
@@ -27,22 +24,15 @@ class ArmTrajectoryPublisher(Node):
 
         trajectory_msg.points.append(point)
 
+        # Publish the message once
         self.get_logger().info('Publishing joint trajectory...')
-        self.publisher_.publish(trajectory_msg)
-        self.get_logger().info('Trajectory published successfully.')
+        publisher.publish(trajectory_msg)
 
 
 def main(args=None):
     rclpy.init(args=args)
     node = ArmTrajectoryPublisher()
-
-    try:
-        # Spin to allow callbacks if needed in the future
-        rclpy.spin_once(node, timeout_sec=0)  # Spin once for minimal processing
-    finally:
-        node.destroy_node()
-        rclpy.shutdown()
-
+    rclpy.spin_once(node)
 
 if __name__ == '__main__':
     main()
